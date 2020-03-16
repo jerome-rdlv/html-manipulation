@@ -1,0 +1,13 @@
+{
+    "name": "jerome-rdlv/html-manipulation",
+    "type": "library",
+    "require": {
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jérôme Mulsant",
+            "email": "jerome@rue-de-la-vieille.fr"
+        }
+    ]
+}
