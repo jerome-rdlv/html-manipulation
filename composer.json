@@ -2,6 +2,7 @@
     "name": "jerome-rdlv/html-manipulation",
     "type": "library",
     "require": {
+        "symfony/css-selector": ">=3.4"
     },
     "license": "MIT",
     "authors": [
@@ -12,7 +13,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Rdlv\\WordPress\\HtmlManipulation": "src",
+            "Rdlv\\WordPress\\HtmlManipulation": "src"
         }
-    },
+    }
 }
