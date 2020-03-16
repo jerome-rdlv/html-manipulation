@@ -9,5 +9,10 @@
             "name": "Jérôme Mulsant",
             "email": "jerome@rue-de-la-vieille.fr"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "Rdlv\\WordPress\\HtmlManipulation": "src",
+        }
+    },
 }
