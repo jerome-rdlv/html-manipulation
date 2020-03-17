@@ -31,11 +31,15 @@ class ContentTransform
      * @param string $content
      * @return string
      */
-    public function run($content)
+    public function run($content, $transforms = null)
     {
         $doc = new Document($content);
 
-        foreach ($this->transforms as $transform) {
+        if ($transforms === null) {
+            $transforms = $this->transforms;
+        }
+
+        foreach ($transforms as $transform) {
             if (is_callable($transform)) {
                 call_user_func($transform, $doc);
             } elseif ($transform instanceof TransformInterface) {
