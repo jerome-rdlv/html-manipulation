@@ -35,6 +35,21 @@ trait NodeTrait
         );
     }
 
+    /**
+     * @param string $selector
+     * @return Element|null
+     */
+    public function find($selector)
+    {
+        $nodes = $this->findAll($selector);
+        if ($nodes->count() < 1) {
+            return null;
+        }
+        /** @var Element $first */
+        $first = $nodes->item(0);
+        return $first;
+    }
+
     public function innerHtml()
     {
         $output = '';
