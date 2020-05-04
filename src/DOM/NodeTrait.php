@@ -50,14 +50,22 @@ trait NodeTrait
         return $first;
     }
 
-    public function innerHtml()
+    public function innerHtml($html = null)
     {
-        $output = '';
-        /** @var DOMNode $node */
-        foreach ($this->childNodes as $node) {
-            $output .= $this->ownerDocument->saveHTML($node);
+        if ($html) {
+            $fragment = $this->ownerDocument->createDocumentFragment();
+            $fragment->appendXML('<div>' . $html . '</div>');
+            while ($fragment->firstChild->firstChild) {
+                $this->appendChild($fragment->firstChild->firstChild);
+            }
+        } else {
+            $output = '';
+            /** @var DOMNode $node */
+            foreach ($this->childNodes as $node) {
+                $output .= $this->ownerDocument->saveHTML($node);
+            }
+            return $output;
         }
-        return $output;
     }
 
     public function outerHtml()
