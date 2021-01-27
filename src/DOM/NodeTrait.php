@@ -50,9 +50,17 @@ trait NodeTrait
         return $first;
     }
 
+    public function empty()
+    {
+        while ($this->firstChild) {
+            $this->removeChild($this->firstChild);
+        }
+    }
+
     public function innerHtml($html = null)
     {
         if ($html) {
+            $this->empty();
             $fragment = $this->ownerDocument->createDocumentFragment();
             $fragment->appendXML('<div>' . $html . '</div>');
             while ($fragment->firstChild->firstChild) {
