@@ -33,11 +33,15 @@ class ContentTransform
      */
     public function run($content, $transforms = null)
     {
-        $doc = new Document($content);
-
         if ($transforms === null) {
             $transforms = $this->transforms;
         }
+       
+        if (!$transforms) {
+            return $content;
+        }
+
+        $doc = new Document($content);
 
         foreach ($transforms as $transform) {
             if (is_callable($transform)) {
