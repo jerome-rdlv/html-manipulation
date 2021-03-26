@@ -9,7 +9,7 @@ use Rdlv\WordPress\HtmlManipulation\DOM\Element;
 use Rdlv\WordPress\HtmlManipulation\DOM\Node;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
-class AddAttributes implements TransformInterface
+class SetAttributes implements TransformInterface
 {
     private $query;
     private $attributes;
@@ -29,7 +29,11 @@ class AddAttributes implements TransformInterface
         foreach ($nodes as $node) {
             if ($node instanceof Element) {
                 foreach ($this->attributes as $attribute => $value) {
-                    $node->setAttribute($attribute, $value);
+                    if ($value === null) {
+                        $node->removeAttribute($attribute);
+                    } else {
+                        $node->setAttribute($attribute, $value);
+                    }
                 }
             }
         }
