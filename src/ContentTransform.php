@@ -36,7 +36,7 @@ class ContentTransform
         if ($transforms === null) {
             $transforms = $this->transforms;
         }
-       
+
         if (!$transforms) {
             return $content;
         }

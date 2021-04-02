@@ -33,7 +33,11 @@ class PregReplaceContent implements \Rdlv\WordPress\HtmlManipulation\TransformIn
         /** @var Node $node */
         foreach ($nodes as $node) {
             if ($node instanceof Element) {
-                $node->innerHtml(preg_replace($this->search, $this->replace, $node->innerHtml()));
+                $node->innerHtml(preg_replace('#<br *>#', '<br/>', preg_replace(
+                    $this->search,
+                    $this->replace,
+                    $node->innerHtml()
+                )));
             }
         }
     }
