@@ -2,8 +2,13 @@
 
 namespace Rdlv\WordPress\HtmlManipulation;
 
+use Rdlv\WordPress\HtmlManipulation\DOM\Document;
+use Rdlv\WordPress\HtmlManipulation\DOM\Element;
 use DOMElement;
 
+/**
+ * @deprecated Use DOM\Document directly
+ */
 class ContentParser
 {
     /** @var Document */
@@ -31,14 +36,14 @@ class ContentParser
     {
         return $this->doc->find($selector);
     }
-    
+
     private function initCursor()
     {
         if ($this->cursor === false) {
             $this->cursor = null;
-            $nodes = $this->doc->find('body > :first-child');
-            if ($nodes->length) {
-                $this->cursor = $nodes->item(0);
+            $node = $this->doc->find('body > :first-child');
+            if ($node) {
+                $this->cursor = $node;
             }
         }
     }

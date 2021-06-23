@@ -26,7 +26,7 @@ class Document extends DOMDocument
         $this->registerNodeClass('DOMComment', 'Rdlv\WordPress\HtmlManipulation\DOM\Comment');
 
         if ($content && is_string($content)) {
-            $this->loadHTML(self::CHARSET_META . $content);
+            @$this->loadHTML(self::CHARSET_META . $content);
         }
 
         $this->xpath = new DOMXPath($this);
