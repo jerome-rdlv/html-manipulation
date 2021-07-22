@@ -14,13 +14,23 @@ class Element extends \DOMElement
 
     public function addClass($classes)
     {
-        $olds = explode(' ', $this->getAttribute('class'));
-        $news = explode(' ', $classes);
+        $existing = explode(' ', $this->getAttribute('class'));
+        $toAdd = explode(' ', $classes);
 
-        $news = array_merge($olds, $news);
-        $news = array_unique($news);
+        $this->setAttribute(
+            'class', implode(' ', array_unique(array_merge($existing, $toAdd)))
+        );
+    }
 
-        $this->setAttribute('class', implode(' ', $news));
+    public function removeClass($classes)
+    {
+        $existing = explode(' ', $this->getAttribute('class'));
+        $toRemove = explode(' ', $classes);
+
+        $this->setAttribute(
+            'class',
+            implode(' ', array_diff($existing, $toRemove))
+        );
     }
 
     public function hasClass($class)
