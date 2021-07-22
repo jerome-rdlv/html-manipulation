@@ -18,7 +18,8 @@ class Element extends \DOMElement
         $toAdd = explode(' ', $classes);
 
         $this->setAttribute(
-            'class', implode(' ', array_unique(array_merge($existing, $toAdd)))
+            'class',
+            trim(implode(' ', array_unique(array_merge($existing, $toAdd))))
         );
     }
 
@@ -29,7 +30,7 @@ class Element extends \DOMElement
 
         $this->setAttribute(
             'class',
-            implode(' ', array_diff($existing, $toRemove))
+            trim(implode(' ', array_diff($existing, $toRemove)))
         );
     }
 

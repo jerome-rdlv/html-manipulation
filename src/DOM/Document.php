@@ -4,11 +4,16 @@ namespace Rdlv\WordPress\HtmlManipulation\DOM;
 
 use DOMDocument;
 use DOMXPath;
+use Masterminds\HTML5;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 
 class Document extends DOMDocument
 {
-    const CHARSET_META = '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />';
+    private const TEMPLATE_NATIVE = '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />%s';
+    private const TEMPLATE_HTML5 = '<!DOCTYPE html><html><meta charset="UTF-8"/><body>%s</body></html>';
+
+    const PARSER_NATIVE = 'native';
+    const PARSER_HTML5 = 'html5';
 
     /** @var DOMXPath */
     private $xpath;
@@ -16,7 +21,9 @@ class Document extends DOMDocument
     /** @var CssSelectorConverter */
     private $cssc;
 
-    public function __construct($content)
+    public $parser = self::PARSER_HTML5;
+
+    public function __construct()
     {
         parent::__construct('1.0', 'utf-8');
 
@@ -25,12 +32,26 @@ class Document extends DOMDocument
         $this->registerNodeClass('DOMText', 'Rdlv\WordPress\HtmlManipulation\DOM\Text');
         $this->registerNodeClass('DOMComment', 'Rdlv\WordPress\HtmlManipulation\DOM\Comment');
 
-        if ($content && is_string($content)) {
-            @$this->loadHTML(self::CHARSET_META . $content);
-        }
-
-        $this->xpath = new DOMXPath($this);
         $this->cssc = new CssSelectorConverter();
+    }
+
+    public function loadHTML($source, $options = 0)
+    {
+        switch ($this->parser) {
+            case self::PARSER_HTML5:
+                $html5 = new HTML5();
+                $html5->loadHTML(
+                    sprintf(self::TEMPLATE_HTML5, $source),
+                    [
+                        'target_document' => $this,
+                        'disable_html_ns' => true,
+                    ]
+                );
+                break;
+            default:
+                @parent::loadHTML(sprintf(self::TEMPLATE_NATIVE, $source));
+        }
+        $this->xpath = new DOMXPath($this);
     }
 
     /**
@@ -65,13 +86,14 @@ class Document extends DOMDocument
     public function html()
     {
         $output = '';
-        $body = $this->find('body');
-        if ($body) {
-            /** @var Node $node */
-            foreach ($body->childNodes as $node) {
-                $output .= $node->outerHtml();
-            }
-        }
-        return $output;
+        $body = $this->getElementsByTagName('body')->item(0);
+        return $body->innerHtml();
+//        if ($body) {
+//            /** @var Node $node */
+//            foreach ($body->childNodes as $node) {
+//                $output .= $node->outerHtml();
+//            }
+//        }
+//        return $output;
     }
 }

@@ -11,12 +11,17 @@ class ContentTransform
      */
     private $transforms = [];
 
+    /** @var string */
+    public $parser;
+
     /**
      * @param TransformInterface[] $transforms
+     * @param string $parser HTML parser to use. Be careful, HTML5 parser is very slow.
      */
-    public function __construct($transforms = [])
+    public function __construct($transforms = [], string $parser = Document::PARSER_NATIVE)
     {
         $this->transforms = $transforms;
+        $this->parser = $parser;
     }
 
     /**
@@ -28,20 +33,27 @@ class ContentTransform
     }
 
     /**
-     * @param string $content
+     * @param string $source
      * @return string
      */
-    public function run($content, $transforms = null)
+    public function run($source, $transforms = null, string $parser = null)
     {
         if ($transforms === null) {
             $transforms = $this->transforms;
         }
 
-        if (!$transforms) {
-            return $content;
+        if (!$transforms || !$source) {
+            return $source;
         }
 
-        $doc = new Document($content);
+        $doc = new Document();
+
+//        $start = microtime(true);
+        
+        $doc->parser = $parser ?: $this->parser;
+        $doc->loadHTML($source);
+
+//        trigger_error(sprintf('parse %s in %s ms', $doc->parser, round((microtime(true) - $start) * 1000, 3)));
 
         foreach ($transforms as $transform) {
             if (is_callable($transform)) {
@@ -50,6 +62,8 @@ class ContentTransform
                 $transform->run($doc);
             }
         }
+        
+//        trigger_error(sprintf('transform in %s ms', round((microtime(true) - $start) * 1000, 3)));
 
         return $doc->html();
     }

@@ -8,7 +8,7 @@ use Rdlv\WordPress\HtmlManipulation\DOM\Element;
 
 class Util
 {
-    public static function changeTag(Element $element, $tag)
+    public static function changeTag(Element $element, $tag): Element
     {
         $doc = $element->ownerDocument;
 
@@ -27,5 +27,7 @@ class Util
 
         // replace element
         $element->parentNode->replaceChild($new, $element);
+        
+        return $new;
     }
 }

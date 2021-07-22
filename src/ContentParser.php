@@ -20,7 +20,8 @@ class ContentParser
     
     public function __construct($content)
     {
-        $this->doc = new Document($content);
+        $this->doc = new Document();
+        $this->doc->loadHTML($content);
     }
 
     /**
