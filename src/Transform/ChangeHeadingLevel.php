@@ -10,17 +10,22 @@ use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class ChangeHeadingLevel implements TransformInterface
 {
+    const HEADING_SELECTOR = 'h1, h2, h3, h4, h5, h6';
+
     private $increment;
-    
-    public function __construct($increment = -1)
+
+    private $selector;
+
+    public function __construct($increment = -1, $selector = self::HEADING_SELECTOR)
     {
         $this->increment = $increment;
+        $this->selector = $selector;
     }
 
     public function run($doc)
     {
         /** @var Document $doc */
-        $elements = $doc->findAll('h1, h2, h3, h4, h5, h6');
+        $elements = $doc->findAll($this->selector);
 
         /** @var Element $element */
         foreach ($elements as $element) {

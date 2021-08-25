@@ -21,7 +21,7 @@ class Document extends DOMDocument
     /** @var CssSelectorConverter */
     private $cssc;
 
-    public $parser = self::PARSER_HTML5;
+    public $parser = self::PARSER_NATIVE;
 
     public function __construct()
     {
