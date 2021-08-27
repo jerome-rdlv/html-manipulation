@@ -9,7 +9,7 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
 
 class Document extends DOMDocument
 {
-    private const TEMPLATE_NATIVE = '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />%s';
+    private const TEMPLATE_NATIVE = '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><body>%s</body>';
     private const TEMPLATE_HTML5 = '<!DOCTYPE html><html><meta charset="UTF-8"/><body>%s</body></html>';
 
     const PARSER_NATIVE = 'native';
@@ -85,15 +85,7 @@ class Document extends DOMDocument
      */
     public function html()
     {
-        $output = '';
         $body = $this->getElementsByTagName('body')->item(0);
-        return $body->innerHtml();
-//        if ($body) {
-//            /** @var Node $node */
-//            foreach ($body->childNodes as $node) {
-//                $output .= $node->outerHtml();
-//            }
-//        }
-//        return $output;
+        return $body ? $body->innerHtml() : '';
     }
 }
