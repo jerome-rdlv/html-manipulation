@@ -57,23 +57,27 @@ trait NodeTrait
         }
     }
 
-    public function innerHtml($html = null)
+    public function innerHtml($html = null): string
     {
-        if ($html) {
+        if ($html !== null) {
+            // update inner HTML
             $this->empty();
-            $fragment = $this->ownerDocument->createDocumentFragment();
-            $fragment->appendXML('<div>' . $html . '</div>');
-            while ($fragment->firstChild->firstChild) {
-                $this->appendChild($fragment->firstChild->firstChild);
+            if ($html) {
+                $fragment = $this->ownerDocument->createDocumentFragment();
+                $fragment->appendXML('<div>' . $html . '</div>');
+                while ($fragment->firstChild->firstChild) {
+                    $this->appendChild($fragment->firstChild->firstChild);
+                }
             }
-        } else {
-            $output = '';
-            /** @var DOMNode $node */
-            foreach ($this->childNodes as $node) {
-                $output .= $this->ownerDocument->saveHTML($node);
-            }
-            return $output;
         }
+        
+        // return inner HTML
+        $output = '';
+        /** @var DOMNode $node */
+        foreach ($this->childNodes as $node) {
+            $output .= $this->ownerDocument->saveHTML($node);
+        }
+        return $output;
     }
 
     public function outerHtml()
