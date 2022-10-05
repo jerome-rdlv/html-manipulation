@@ -38,7 +38,7 @@ class NodeList implements Iterator, Countable
         return $output;
     }
     
-    public function count(): int
+    public function count()
     {
         return $this->nodes->length;
     }
@@ -54,7 +54,7 @@ class NodeList implements Iterator, Countable
      * @return mixed Can return any type.
      * @since 5.0.0
      */
-    public function current(): mixed
+    public function current()
     {
         return $this->nodes->item($this->index);
     }
@@ -65,7 +65,7 @@ class NodeList implements Iterator, Countable
      * @return void Any returned value is ignored.
      * @since 5.0.0
      */
-    public function next(): void
+    public function next()
     {
         ++$this->index;
     }
@@ -76,7 +76,7 @@ class NodeList implements Iterator, Countable
      * @return mixed scalar on success, or null on failure.
      * @since 5.0.0
      */
-    public function key(): mixed
+    public function key()
     {
         return $this->valid() ? $this->index : null;
     }
@@ -88,7 +88,7 @@ class NodeList implements Iterator, Countable
      * Returns true on success or false on failure.
      * @since 5.0.0
      */
-    public function valid(): bool
+    public function valid()
     {
         return $this->nodes->item($this->index) !== null;
     }
@@ -99,7 +99,7 @@ class NodeList implements Iterator, Countable
      * @return void Any returned value is ignored.
      * @since 5.0.0
      */
-    public function rewind(): void
+    public function rewind()
     {
         $this->index = 0;
     }
