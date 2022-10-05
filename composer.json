@@ -2,7 +2,8 @@
     "name": "jerome-rdlv/html-manipulation",
     "type": "library",
     "require": {
-        "symfony/css-selector": ">=3.4",
+        "php": ">=8.0",
+        "symfony/css-selector": "^3.4",
         "masterminds/html5": "^2.7"
     },
     "license": "MIT",
