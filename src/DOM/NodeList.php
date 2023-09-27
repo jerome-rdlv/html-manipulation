@@ -9,43 +9,40 @@ use Iterator;
 
 class NodeList implements Iterator, Countable
 {
-    /** @var DOMNodeList */
+    /** @var DOMNode[] */
     private $nodes;
-    
+
     private $index = 0;
 
     /**
      * NodeList constructor.
-     * @param DOMNodeList $nodes
+     * @param  DOMNodeList|array  $nodes
      */
     public function __construct($nodes = null)
     {
-        if ($nodes instanceof DOMNodeList) {
-            $this->nodes = $nodes;
-        }
-        else {
-            $this->nodes = new DOMNodeList();
-        }
+        $this->nodes = $nodes;
     }
-    
+
     public function innerHtml()
     {
         $output = '';
-        /** @var DOMNode $node */
         foreach ($this->nodes as $node) {
             $output .= $node->ownerDocument->saveHTML($node);
         }
         return $output;
     }
-    
+
     public function count(): int
     {
-        return $this->nodes->length;
+        return is_array($this->nodes) ? count($this->nodes) : $this->nodes->length;
     }
-    
+
     public function item($index)
     {
-        return $this->nodes->item($index);
+        if ($index >= 0 && $index < $this->count()) {
+            return is_array($this->nodes) ? $this->nodes[$index] : $this->nodes->item($index);
+        }
+        return null;
     }
 
     /**
@@ -56,7 +53,7 @@ class NodeList implements Iterator, Countable
      */
     public function current(): mixed
     {
-        return $this->nodes->item($this->index);
+        return $this->item($this->index);
     }
 
     /**
@@ -90,7 +87,7 @@ class NodeList implements Iterator, Countable
      */
     public function valid(): bool
     {
-        return $this->nodes->item($this->index) !== null;
+        return $this->index >= 0 && $this->index < $this->count();
     }
 
     /**
