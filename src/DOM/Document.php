@@ -23,6 +23,13 @@ class Document extends DOMDocument
 
     public $parser = self::PARSER_NATIVE;
 
+    public static function create(string $source): self
+    {
+        $doc = new Document();
+        $doc->loadHTML($source);
+        return $doc;
+    }
+
     public function __construct()
     {
         parent::__construct('1.0', 'utf-8');
@@ -55,18 +62,20 @@ class Document extends DOMDocument
     }
 
     /**
-     * @param string $selector
+     * @param  string  $selector
      * @return NodeList
      */
     public function findAll($selector)
     {
-        return new NodeList($this->xpath->query(
-            $this->cssc->toXPath($selector)
-        ));
+        return new NodeList(
+            $this->xpath->query(
+                $this->cssc->toXPath($selector)
+            )
+        );
     }
 
     /**
-     * @param string $selector
+     * @param  string  $selector
      * @return Element|null
      */
     public function find($selector)
