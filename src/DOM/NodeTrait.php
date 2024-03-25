@@ -64,7 +64,9 @@ trait NodeTrait
             $this->empty();
             if ($html) {
                 $fragment = $this->ownerDocument->createDocumentFragment();
+                libxml_use_internal_errors(true);
                 $fragment->appendXML('<div>' . $html . '</div>');
+                libxml_clear_errors();
                 while ($fragment->firstChild && $fragment->firstChild->firstChild) {
                     $this->appendChild($fragment->firstChild->firstChild);
                 }
