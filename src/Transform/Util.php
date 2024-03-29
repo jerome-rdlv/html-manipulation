@@ -4,10 +4,14 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
+use DOMException;
 use Rdlv\WordPress\HtmlManipulation\DOM\Element;
 
 class Util
 {
+    /**
+     * @throws DOMException
+     */
     public static function changeTag(Element $element, $tag): Element
     {
         $doc = $element->ownerDocument;

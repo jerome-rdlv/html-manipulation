@@ -1,32 +1,32 @@
-<?php
+<?php /** @noinspection ALL */
 
 namespace Rdlv\WordPress\HtmlManipulation\DOM;
 
 use DOMDocument;
+use DOMException;
 use DOMXPath;
 use Masterminds\HTML5;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 
-class Document extends DOMDocument
+class Document extends DOMDocument implements NodeInterface
 {
+    public const PARSER_NATIVE = 'native';
+    public const PARSER_HTML5 = 'html5';
+
     private const TEMPLATE_NATIVE = '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><body>%s</body>';
     private const TEMPLATE_HTML5 = '<!DOCTYPE html><html><meta charset="UTF-8"/><body>%s</body></html>';
 
-    const PARSER_NATIVE = 'native';
-    const PARSER_HTML5 = 'html5';
+    private DOMXPath $xpath;
+    private CssSelectorConverter $cssc;
 
-    /** @var DOMXPath */
-    private $xpath;
+    public string $parser = self::PARSER_NATIVE;
 
-    /** @var CssSelectorConverter */
-    private $cssc;
+    private ?Element $body = null;
 
-    public $parser = self::PARSER_NATIVE;
-
-    public static function create(string $source): self
+    public static function create(string $source, int $options = LIBXML_NOERROR): self
     {
-        $doc = new Document();
-        $doc->loadHTML($source);
+        $doc = new self();
+        $doc->loadHTML($source, $options);
         return $doc;
     }
 
@@ -38,11 +38,12 @@ class Document extends DOMDocument
         $this->registerNodeClass('DOMNode', 'Rdlv\WordPress\HtmlManipulation\DOM\Node');
         $this->registerNodeClass('DOMText', 'Rdlv\WordPress\HtmlManipulation\DOM\Text');
         $this->registerNodeClass('DOMComment', 'Rdlv\WordPress\HtmlManipulation\DOM\Comment');
+        $this->registerNodeClass('DOMDocumentFragment', 'Rdlv\WordPress\HtmlManipulation\DOM\Fragment');
 
         $this->cssc = new CssSelectorConverter();
     }
 
-    public function loadHTML($source, $options = 0)
+    public function loadHTML(string $source, int $options = LIBXML_NOERROR): static
     {
         switch ($this->parser) {
             case self::PARSER_HTML5:
@@ -59,42 +60,72 @@ class Document extends DOMDocument
                 @parent::loadHTML(sprintf(self::TEMPLATE_NATIVE, $source));
         }
         $this->xpath = new DOMXPath($this);
+        $this->body = $this->getElementsByTagName('body')->item(0);
+        return $this;
     }
 
-    /**
-     * @param  string  $selector
-     * @return NodeList
-     */
-    public function findAll($selector)
+    public function __get(string $name)
     {
-        return new NodeList(
+        return match ($name) {
+            'body', 'head' => $this->getElementsByTagName($name)->item(0),
+            default => null,
+        };
+    }
+
+    public function querySelectorAll(string $selector): ElementList
+    {
+        return new ElementList(
             $this->xpath->query(
                 $this->cssc->toXPath($selector)
             )
         );
     }
 
-    /**
-     * @param  string  $selector
-     * @return Element|null
-     */
-    public function find($selector)
+    public function querySelector(string $selector): ?Element
     {
-        $nodes = $this->findAll($selector);
-        if ($nodes->count() < 1) {
-            return null;
-        }
-        /** @var Element $first */
-        $first = $nodes->item(0);
-        return $first;
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->xpath->query(
+            $this->cssc->toXPath($selector)
+        )?->item(0);
+    }
+
+    public function html(): string
+    {
+        return $this->body?->innerHtml() ?? '';
     }
 
     /**
-     * @return string
+     * @param  string[]  $parts  Classes to add to parts
+     * @throws DOMException
      */
-    public function html()
+    public function split(array $parts, string $splitSelector = 'hr'): static
     {
-        $body = $this->getElementsByTagName('body')->item(0);
-        return $body ? $body->innerHtml() : '';
+        $boundaries = iterator_to_array($this->querySelectorAll($splitSelector));
+
+        // create parts elements
+        $parts = array_map(function (string $class) {
+            /** @var Element $part */
+            $part = $this->createElement('div');
+            $part->classList->add($class);
+            return $part;
+        }, $parts);
+
+        $i = 0;
+        $body = $this->querySelector('body');
+        while ($child = $body->firstChild) {
+            if (in_array($child, $boundaries, true)) {
+                $i = min($i + 1, count($parts) - 1);
+                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                $child->remove();
+                continue;
+            }
+            $parts[$i]->appendChild($child);
+        }
+
+        foreach ($parts as $part) {
+            $body->appendChild($part);
+        }
+
+        return $this;
     }
 }

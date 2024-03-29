@@ -4,24 +4,21 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Document;
 use Rdlv\WordPress\HtmlManipulation\DOM\Element;
-use Rdlv\WordPress\HtmlManipulation\DOM\Node;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class Unwrap implements TransformInterface
 {
-    private $query;
+    private string $query;
 
-    public function __construct($query)
+    public function __construct(string $query)
     {
         $this->query = $query;
     }
 
-    public function run($doc)
+    public function run($doc): void
     {
-        /** @var Document $doc */
-        $parents = $doc->findAll($this->query);
+        $parents = $doc->querySelectorAll($this->query);
 
         $toDelete = array();
 

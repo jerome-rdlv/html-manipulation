@@ -2,7 +2,9 @@
 
 namespace Rdlv\WordPress\HtmlManipulation\DOM;
 
-class Node extends \DOMNode
+use DOMNode;
+
+class Node extends DOMNode implements NodeInterface
 {
     use NodeTrait;
 }

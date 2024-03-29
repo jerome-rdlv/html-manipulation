@@ -4,34 +4,27 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Document;
 use Rdlv\WordPress\HtmlManipulation\DOM\Element;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class ReplaceTag implements TransformInterface
 {
-    private $query;
-    private $tag;
-    private $class;
-    
-    public function __construct($query, $tag, $class = null)
+    private string $query;
+    private string $tag;
+    private ?string $class;
+
+    public function __construct(string $query, string $tag, string $class = null)
     {
         $this->query = $query;
         $this->tag = $tag;
         $this->class = $class;
     }
 
-    public function run($doc)
+    public function run($doc): void
     {
-        /** @var Document $doc */
-        $elements = $doc->findAll($this->query);
-
-        /** @var Element $element */
-        foreach ($elements as $element) {
-            if ($this->class) {
-                $element->addClass($this->class);
-            }
+        $doc->querySelectorAll($this->query)->each(function (Element $element) {
+            $this->class && $element->classList->add($this->class);
             Util::changeTag($element, $this->tag);
-        }
+        });
     }
 }

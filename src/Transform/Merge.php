@@ -4,31 +4,28 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Document;
 use Rdlv\WordPress\HtmlManipulation\DOM\Element;
 use Rdlv\WordPress\HtmlManipulation\DOM\Text;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class Merge implements TransformInterface
 {
-    private $query;
-    private $tag;
-    private $class;
+    private string $query;
+    private ?string $tag;
+    private ?string $class;
 
-    public function __construct($query, $tag = null, $class = null)
+    public function __construct(string $query, ?string $tag = null, ?string $class = null)
     {
         $this->query = $query;
-        $this->taq = $tag;
+        $this->tag = $tag;
         $this->class = $class;
     }
 
-    public function run($doc)
+    public function run($doc): void
     {
-        /** @var Document $doc */
-        $nodes = $doc->findAll($this->query);
+        $nodes = $doc->querySelectorAll($this->query);
 
         if ($nodes->count()) {
-
             $candidates = [];
             foreach ($nodes as $node) {
                 $candidates[] = $node;
@@ -40,7 +37,7 @@ class Merge implements TransformInterface
                 $node = $candidates[0];
 
                 // create new parent element
-                $new = $doc->createElement($this->tag ? $this->tag : $node->tagName);
+                $new = $doc->createElement($this->tag ?: $node->tagName);
                 foreach ($node->attributes as $attribute) {
                     $new->setAttribute($attribute->name, $attribute->value);
                 }
@@ -52,27 +49,25 @@ class Merge implements TransformInterface
                 $node->parentNode->insertBefore($new, $node);
 
                 do {
-                    $index = array_search($node, $candidates, true);
+                    $inArray = in_array($node, $candidates, true);
                     $next = $node->nextSibling;
 
                     if ($node instanceof Text) {
                         $new->appendChild($node);
-                    } else {
-                        if ($index !== false) {
-                            // one of the candidates
-                            while ($node->childNodes->length) {
-                                $new->appendChild($node->childNodes->item(0));
-                            }
-                            // remove from document
-                            $node->parentNode->removeChild($node);
-                        } else {
-                            // eligible node between
-                            $new->appendChild($node);
+                    } elseif ($inArray) {
+                        // one of the candidates
+                        while ($node->childNodes->length) {
+                            $new->appendChild($node->childNodes->item(0));
                         }
+                        // remove from document
+                        $node->parentNode->removeChild($node);
+                    } else {
+                        // eligible node between
+                        $new->appendChild($node);
                     }
 
                     // drop node from candidates
-                    if ($index !== false) {
+                    if ($inArray) {
                         array_shift($candidates);
                     }
 

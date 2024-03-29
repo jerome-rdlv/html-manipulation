@@ -2,88 +2,97 @@
 
 namespace Rdlv\WordPress\HtmlManipulation\DOM;
 
-class Element extends \DOMElement
+use DOMElement;
+
+/**
+ * @property ElementList $children
+ * @property ClassList $classList
+ * @property string $id
+ * @property static $nextElementSibling
+ * @property static $previousElementSibling
+ * @property static $firstElementChild
+ */
+class Element extends DOMElement implements NodeInterface
 {
     use NodeTrait;
-    
+
+    private ClassList $classList;
+
+    public function __construct(string $qualifiedName, ?string $value = null, string $namespace = '')
+    {
+        parent::__construct($qualifiedName, $value, $namespace);
+        $this->classList = new ClassList($this);
+    }
+
     public function __get($name)
     {
-        $method = 'get'. ucfirst($name);
+        $method = 'get'.ucfirst($name);
         if (method_exists($this, $method)) {
             return call_user_func([$this, $method]);
         }
+        return match ($name) {
+            'classList' => new ClassList($this),
+            'id' => $this->getAttribute('id'),
+            default => null,
+        };
     }
 
-    public function setAttribute($name, $value)
+    public function __set($name, $value)
     {
-        parent::setAttribute($name, $value);
+        /** @noinspection PhpSwitchStatementWitSingleBranchInspection */
+        switch ($name) {
+            case 'id':
+                $this->setAttribute('id', $value);
+        }
+    }
+
+    public function setAttribute(string $qualifiedName, string $value): static
+    {
+        parent::setAttribute($qualifiedName, $value);
         return $this;
     }
 
-    public function addClass($classes)
-    {
-        $existing = explode(' ', $this->getAttribute('class'));
-        $toAdd = explode(' ', $classes);
-
-        $this->setAttribute(
-            'class',
-            trim(implode(' ', array_unique(array_merge($existing, $toAdd))))
-        );
-    }
-
-    public function removeClass($classes)
-    {
-        $existing = explode(' ', $this->getAttribute('class'));
-        $toRemove = explode(' ', $classes);
-
-        $this->setAttribute(
-            'class',
-            trim(implode(' ', array_diff($existing, $toRemove)))
-        );
-    }
-
-    public function hasClass($class)
-    {
-        return preg_match('/(^|\b)' . preg_quote($class) . '(\b|$)/', $this->getAttribute('class'));
-    }
-
-    public function getChildElements()
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getChildren(): ElementList
     {
         $nodes = [];
         foreach ($this->childNodes as $node) {
-            if ($node->nodeType === XML_ELEMENT_NODE) {
+            if ($node instanceof Element) {
                 $nodes[] = $node;
             }
         }
-        return new NodeList($nodes);
+        return new ElementList($nodes);
     }
-    
-    public function getNextElementSibling()
+
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getNextElementSibling(): ?Element
     {
         $node = $this;
         while ($node = $node->nextSibling) {
-            if ($node->nodeType === XML_ELEMENT_NODE) {
+            if ($node instanceof Element) {
                 return $node;
             }
         }
         return null;
     }
 
-    public function getPreviousElementSibling()
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getPreviousElementSibling(): ?Element
     {
         $node = $this;
         while ($node = $node->previousSibling) {
-            if ($node->nodeType === XML_ELEMENT_NODE) {
+            if ($node instanceof Element) {
                 return $node;
             }
         }
         return null;
     }
-    
-    public function getFirstElementChild()
+
+    /** @noinspection PhpUnusedPrivateMethodInspection */
+    private function getFirstElementChild(): ?Element
     {
         foreach ($this->childNodes as $node) {
-            if ($node->nodeType === XML_ELEMENT_NODE) {
+            if ($node instanceof Element) {
                 return $node;
             }
         }

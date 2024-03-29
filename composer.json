@@ -4,7 +4,10 @@
     "require": {
         "php": ">=8.0",
         "symfony/css-selector": "^6.4",
-        "masterminds/html5": "^2.8"
+        "ext-libxml": "*"
+    },
+    "suggest": {
+        "masterminds/html5": "Allows correct HTML5 (and SVG) parsing, but slower than native parser."
     },
     "license": "MIT",
     "authors": [

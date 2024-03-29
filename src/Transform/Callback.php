@@ -2,13 +2,13 @@
 
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Document;
 use Rdlv\WordPress\HtmlManipulation\DOM\Element;
+use Rdlv\WordPress\HtmlManipulation\DOM\Node;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class Callback implements TransformInterface
 {
-    private $selector;
+    private string $selector;
     private $callback;
 
     public function __construct(string $selector, callable $callback)
@@ -17,16 +17,8 @@ class Callback implements TransformInterface
         $this->callback = $callback;
     }
 
-    public function run($doc)
+    public function run($doc): void
     {
-        /** @var Document $doc */
-        $nodes = $doc->findAll($this->selector);
-
-        /** @var Node $node */
-        foreach ($nodes as $node) {
-            if ($node instanceof Element) {
-                call_user_func($this->callback, $node);
-            }
-        }
+        $doc->querySelectorAll($this->selector)->each($this->callback);
     }
 }

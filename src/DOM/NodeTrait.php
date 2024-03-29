@@ -1,28 +1,19 @@
-<?php
+<?php /** @noinspection PhpComposerExtensionStubsInspection */
 
 namespace Rdlv\WordPress\HtmlManipulation\DOM;
 
-use DOMNode;
 use DOMXPath;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 
 /**
- * Trait NodeTrait
- * @property \DOMDocument $ownerDocument
+ * @property Document $ownerDocument
  */
 trait NodeTrait
 {
-    /** @var DOMXPath */
-    private $xpath = null;
+    private ?DOMXPath $xpath = null;
+    private ?CssSelectorConverter $cssc = null;
 
-    /** @var CssSelectorConverter */
-    private $cssc = null;
-
-    /**
-     * @param $selector
-     * @return NodeList
-     */
-    public function findAll($selector)
+    public function querySelectorAll(string $selector): ElementList
     {
         if ($this->xpath === null) {
             $this->xpath = new DOMXPath($this->ownerDocument);
@@ -30,31 +21,26 @@ trait NodeTrait
         if ($this->cssc === null) {
             $this->cssc = new CssSelectorConverter(true);
         }
-        return new NodeList(
-            $this->xpath->query($this->cssc->toXPath($selector), $this)
+        return new ElementList(
+            $this->xpath->query(
+                $this->cssc->toXPath($selector),
+                $this
+            )
         );
     }
 
-    /**
-     * @param string $selector
-     * @return Element|null
-     */
-    public function find($selector)
+    public function querySelector($selector): ?Element
     {
-        $nodes = $this->findAll($selector);
-        if ($nodes->count() < 1) {
-            return null;
-        }
-        /** @var Element $first */
-        $first = $nodes->item(0);
-        return $first;
+        $nodes = $this->querySelectorAll($selector);
+        return $nodes->item(0);
     }
 
-    public function empty()
+    public function empty(): static
     {
         while ($this->firstChild) {
             $this->removeChild($this->firstChild);
         }
+        return $this;
     }
 
     public function innerHtml($html = null): string
@@ -65,24 +51,25 @@ trait NodeTrait
             if ($html) {
                 $fragment = $this->ownerDocument->createDocumentFragment();
                 libxml_use_internal_errors(true);
-                $fragment->appendXML('<div>' . $html . '</div>');
+                $html = preg_replace('#<br *>#', '<br/>', $html);
+                $fragment->appendXML('<div>'.$html.'</div>');
                 libxml_clear_errors();
                 while ($fragment->firstChild && $fragment->firstChild->firstChild) {
                     $this->appendChild($fragment->firstChild->firstChild);
                 }
             }
         }
-        
+
         // return inner HTML
         $output = '';
-        /** @var DOMNode $node */
+        /** @var Node $node */
         foreach ($this->childNodes as $node) {
             $output .= $this->ownerDocument->saveHTML($node);
         }
         return $output;
     }
 
-    public function outerHtml()
+    public function outerHtml(): false|string
     {
         return $this->ownerDocument->saveHTML($this);
     }
