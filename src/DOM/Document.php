@@ -43,7 +43,7 @@ class Document extends DOMDocument implements NodeInterface
         $this->cssc = new CssSelectorConverter();
     }
 
-    public function loadHTML(string $source, int $options = LIBXML_NOERROR): static
+    public function loadHTML(string $source, int $options = LIBXML_NOERROR): bool
     {
         switch ($this->parser) {
             case self::PARSER_HTML5:
@@ -57,11 +57,13 @@ class Document extends DOMDocument implements NodeInterface
                 );
                 break;
             default:
-                @parent::loadHTML(sprintf(self::TEMPLATE_NATIVE, $source));
+                if (!@parent::loadHTML(sprintf(self::TEMPLATE_NATIVE, $source))) {
+                    return false;
+                }
         }
         $this->xpath = new DOMXPath($this);
         $this->body = $this->getElementsByTagName('body')->item(0);
-        return $this;
+        return true;
     }
 
     public function __get(string $name)
