@@ -8,6 +8,7 @@ use DOMElement;
  * @property ElementList $children
  * @property ClassList $classList
  * @property string $id
+ * @property string $name
  * @property static $nextElementSibling
  * @property static $previousElementSibling
  * @property static $firstElementChild
@@ -33,6 +34,7 @@ class Element extends DOMElement implements NodeInterface
         return match ($name) {
             'classList' => new ClassList($this),
             'id' => $this->getAttribute('id'),
+            'name' => $this->getAttribute('name'),
             default => null,
         };
     }

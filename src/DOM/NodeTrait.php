@@ -43,6 +43,22 @@ trait NodeTrait
         return $this;
     }
 
+    public function closest(string $selector): ?Element
+    {
+        $elements = $this->ownerDocument->querySelectorAll($selector);
+        $node = $this;
+        while ($node instanceof Element && !$elements->contains($node)) {
+            $node = $node->parentNode;
+        }
+        return $node instanceof Element ? $node : null;
+    }
+
+    public function matches(string $selector): bool
+    {
+        $elements = $this->ownerDocument->querySelectorAll($selector);
+        return $elements->contains($this);
+    }
+
     public function innerHtml($html = null): string
     {
         if ($html !== null) {

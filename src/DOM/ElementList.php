@@ -25,7 +25,7 @@ class ElementList implements IteratorAggregate, Countable
     {
         return $this->elements[$index] ?? null;
     }
-    
+
     public function each(callable $callable): static
     {
         array_walk($this->elements, $callable);
@@ -35,6 +35,17 @@ class ElementList implements IteratorAggregate, Countable
     public function count(): int
     {
         return count($this->elements);
+    }
+
+    public function filter(string $selector): static
+    {
+        if (!$this->elements) {
+            return new self([]);
+        }
+        $candidates = $this->elements[0]->ownerDocument->querySelectorAll($selector);
+        return array_filter($this->elements, function ($element) use ($candidates) {
+            return $candidates->contains($element);
+        });
     }
 
     public function getIterator(): Traversable
