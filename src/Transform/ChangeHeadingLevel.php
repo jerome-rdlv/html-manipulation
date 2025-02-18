@@ -22,7 +22,7 @@ class ChangeHeadingLevel implements TransformInterface
 
     public function run($doc): void
     {
-        $doc->querySelectorAll($this->selector)->each(function (Element $element) {
+        $this->increment && $doc->querySelectorAll($this->selector)->each(function (Element $element) {
             if (preg_match('/h([0-9])/', $element->tagName, $m)) {
                 Util::changeTag($element, 'h'.max(1, min(6, ((int)$m[1] + $this->increment))));
             }

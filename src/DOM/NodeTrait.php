@@ -29,7 +29,7 @@ trait NodeTrait
         );
     }
 
-    public function querySelector($selector): ?Element
+    public function querySelector(string $selector): ?Element
     {
         $nodes = $this->querySelectorAll($selector);
         return $nodes->item(0);
@@ -41,6 +41,48 @@ trait NodeTrait
             $this->removeChild($this->firstChild);
         }
         return $this;
+    }
+
+    public function isEmpty(bool $ignoreSpaces = true): bool
+    {
+        foreach ($this->childNodes as $child) {
+            if (!$child instanceof Text) {
+                return false;
+            }
+            if ($ignoreSpaces ? trim($child->textContent) : $child->textContent) {
+                // node contains text
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function hasOnly(string $tag, int $limit = 1, bool $ignoreSpaces = true): bool
+    {
+        $count = 0;
+        foreach ($this->childNodes as $child) {
+            if ($child instanceof Text) {
+                if ($ignoreSpaces ? trim($child->textContent) : $child->textContent) {
+                    // node contains text
+                    return false;
+                }
+                continue;
+            }
+            if ($child instanceof Element) {
+                if ($child->tagName === $tag) {
+                    ++$count;
+                    if ($count > $limit) {
+                        // node contains more than $limit
+                        return false;
+                    }
+                    continue;
+                } else {
+                    // node contains another element than $tag
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public function closest(string $selector): ?Element
@@ -65,13 +107,13 @@ trait NodeTrait
             // update inner HTML
             $this->empty();
             if ($html) {
-                $fragment = $this->ownerDocument->createDocumentFragment();
-                libxml_use_internal_errors(true);
-                $html = preg_replace('#<br *>#', '<br/>', $html);
-                $fragment->appendXML('<div>'.$html.'</div>');
+                // see https://stackoverflow.com/questions/2778110/change-innerhtml-of-a-php-domelement/47083440#47083440
+                $internal_errors = libxml_use_internal_errors(true);
+                $fragment = Document::create($html);
                 libxml_clear_errors();
-                while ($fragment->firstChild && $fragment->firstChild->firstChild) {
-                    $this->appendChild($fragment->firstChild->firstChild);
+                libxml_use_internal_errors($internal_errors);
+                foreach ($fragment->body->childNodes as $child) {
+                    $this->appendChild($this->ownerDocument->importNode($child, true));
                 }
             }
         }
