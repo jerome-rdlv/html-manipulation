@@ -36,7 +36,7 @@ class ContentTransform
      * @param string $source
      * @return string
      */
-    public function run($source, $transforms = null, string $parser = null)
+    public function run($source, $transforms = null, ?string $parser = null)
     {
         if ($transforms === null) {
             $transforms = $this->transforms;

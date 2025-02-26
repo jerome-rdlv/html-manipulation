@@ -13,7 +13,7 @@ class ReplaceTag implements TransformInterface
     private string $tag;
     private ?string $class;
 
-    public function __construct(string $query, string $tag, string $class = null)
+    public function __construct(string $query, string $tag, ?string $class = null)
     {
         $this->query = $query;
         $this->tag = $tag;
