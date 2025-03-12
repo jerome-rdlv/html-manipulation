@@ -18,7 +18,7 @@ class ContentTransform
      * @param TransformInterface[] $transforms
      * @param string $parser HTML parser to use. Be careful, HTML5 parser is very slow.
      */
-    public function __construct($transforms = [], string $parser = Document::PARSER_NATIVE)
+    public function __construct(array $transforms = [], string $parser = Document::PARSER_NATIVE)
     {
         $this->transforms = $transforms;
         $this->parser = $parser;
@@ -49,7 +49,7 @@ class ContentTransform
         $doc = new Document();
 
 //        $start = microtime(true);
-        
+
         $doc->parser = $parser ?: $this->parser;
         $doc->loadHTML($source);
 
@@ -62,7 +62,7 @@ class ContentTransform
                 $transform->run($doc);
             }
         }
-        
+
 //        trigger_error(sprintf('transform in %s ms', round((microtime(true) - $start) * 1000, 3)));
 
         return $doc->html();
