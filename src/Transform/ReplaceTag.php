@@ -4,7 +4,7 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Element;
+use Dom\ParentNode;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class ReplaceTag implements TransformInterface
@@ -20,11 +20,11 @@ class ReplaceTag implements TransformInterface
         $this->class = $class;
     }
 
-    public function run($doc): void
+    public function run(ParentNode $node): void
     {
-        $doc->querySelectorAll($this->query)->each(function (Element $element) {
+        foreach ($node->querySelectorAll($this->query) as $element) {
             $this->class && $element->classList->add($this->class);
             Util::changeTag($element, $this->tag);
-        });
+        }
     }
 }

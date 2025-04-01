@@ -4,7 +4,7 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Element;
+use Dom\ParentNode;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class SetId implements TransformInterface
@@ -18,10 +18,10 @@ class SetId implements TransformInterface
         $this->id = $id;
     }
 
-    public function run($doc): void
+    public function run(ParentNode $node): void
     {
-        $doc->querySelectorAll($this->query)->each(function (Element $element) {
+        foreach ($node->querySelectorAll($this->query) as $element) {
             $element->id = $this->id;
-        });
+        }
     }
 }

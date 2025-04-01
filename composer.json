@@ -1,14 +1,6 @@
 {
     "name": "jerome-rdlv/html-manipulation",
     "type": "library",
-    "require": {
-        "php": ">=8.0",
-        "symfony/css-selector": "^3.4|^6.4",
-        "ext-libxml": "*"
-    },
-    "suggest": {
-        "masterminds/html5": "Allows correct HTML5 (and SVG) parsing, but slower than native parser."
-    },
     "license": "MIT",
     "authors": [
         {
@@ -16,9 +8,21 @@
             "email": "jerome@rue-de-la-vieille.fr"
         }
     ],
+    "require": {
+        "php": ">=8.4 <9",
+        "ext-dom": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12.0"
+    },
     "autoload": {
         "psr-4": {
             "Rdlv\\WordPress\\HtmlManipulation\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rdlv\\WordPress\\HtmlManipulation\\Test\\": "test"
         }
     }
 }

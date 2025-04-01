@@ -4,7 +4,7 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Element;
+use Dom\ParentNode;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class Unwrap implements TransformInterface
@@ -16,16 +16,16 @@ class Unwrap implements TransformInterface
         $this->query = $query;
     }
 
-    public function run($doc): void
+    public function run(ParentNode $node): void
     {
-        $parents = $doc->querySelectorAll($this->query);
+        $parents = $node->querySelectorAll($this->query);
 
         $toDelete = array();
 
         foreach ($parents as $parent) {
             $children = [];
-            foreach ($parent->childNodes as $node) {
-                $children[] = $node;
+            foreach ($parent->childNodes as $child) {
+                $children[] = $child;
             }
             foreach ($children as $child) {
                 $parent->parentNode->insertBefore($child, $parent);
@@ -34,7 +34,6 @@ class Unwrap implements TransformInterface
         }
 
         foreach ($toDelete as $parent) {
-            /* @var $node Element */
             $parent->parentNode->removeChild($parent);
         }
     }

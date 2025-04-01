@@ -1,0 +1,7 @@
+name: 'jerome-rdlv-html-manipulation'
+services:
+    php:
+        image: webdevops/php-dev:8.4
+        working_dir: /www
+        volumes:
+            - .:/www

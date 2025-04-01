@@ -4,8 +4,9 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Element;
-use Rdlv\WordPress\HtmlManipulation\DOM\Text;
+use Dom\Element;
+use Dom\ParentNode;
+use Dom\Text;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class Merge implements TransformInterface
@@ -21,24 +22,24 @@ class Merge implements TransformInterface
         $this->class = $class;
     }
 
-    public function run($doc): void
+    public function run(ParentNode $node): void
     {
-        $nodes = $doc->querySelectorAll($this->query);
+        $elements = $node->querySelectorAll($this->query);
 
-        if ($nodes->count()) {
+        if ($elements->count()) {
             $candidates = [];
-            foreach ($nodes as $node) {
-                $candidates[] = $node;
+            foreach ($elements as $candidate) {
+                $candidates[] = $candidate;
             }
 
-            $doc = $candidates[0]->ownerDocument;
+            $node = $candidates[0]->ownerDocument;
 
             while (count($candidates) > 0) {
-                $node = $candidates[0];
+                $candidate = $candidates[0];
 
                 // create new parent element
-                $new = $doc->createElement($this->tag ?: $node->tagName);
-                foreach ($node->attributes as $attribute) {
+                $new = $node->createElement($this->tag ?: $candidate->tagName);
+                foreach ($candidate->attributes as $attribute) {
                     $new->setAttribute($attribute->name, $attribute->value);
                 }
                 if ($this->class) {
@@ -46,24 +47,24 @@ class Merge implements TransformInterface
                 }
 
                 // append new element to document
-                $node->parentNode->insertBefore($new, $node);
+                $candidate->parentNode->insertBefore($new, $candidate);
 
                 do {
-                    $inArray = in_array($node, $candidates, true);
-                    $next = $node->nextSibling;
+                    $inArray = in_array($candidate, $candidates, true);
+                    $next = $candidate->nextSibling;
 
-                    if ($node instanceof Text) {
-                        $new->appendChild($node);
+                    if ($candidate instanceof Text) {
+                        $new->appendChild($candidate);
                     } elseif ($inArray) {
                         // one of the candidates
-                        while ($node->childNodes->length) {
-                            $new->appendChild($node->childNodes->item(0));
+                        while ($candidate->childNodes->length) {
+                            $new->appendChild($candidate->childNodes->item(0));
                         }
                         // remove from document
-                        $node->parentNode->removeChild($node);
+                        $candidate->parentNode->removeChild($candidate);
                     } else {
                         // eligible node between
-                        $new->appendChild($node);
+                        $new->appendChild($candidate);
                     }
 
                     // drop node from candidates
@@ -71,14 +72,14 @@ class Merge implements TransformInterface
                         array_shift($candidates);
                     }
 
-                    $node = $next;
+                    $candidate = $next;
                 } while (
-                    $node && (
-                        ($node instanceof Text && preg_match('/^ *$/', $node->textContent))
+                    $candidate && (
+                        ($candidate instanceof Text && preg_match('/^ *$/', $candidate->textContent))
                         ||
-                        in_array($node, $candidates, true)
+                        in_array($candidate, $candidates, true)
                         ||
-                        ($node instanceof Element && $node->tagName === 'br')
+                        ($candidate instanceof Element && $candidate->tagName === 'br')
                     )
                 );
             }

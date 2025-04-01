@@ -2,22 +2,26 @@
 
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
-use Rdlv\WordPress\HtmlManipulation\DOM\Element;
+use Dom\Element;
+use Dom\ParentNode;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class WrapAdjacent implements TransformInterface
 {
+    private $filter;
+
     public function __construct(
-        private string $selector = 'p:not([class])',
-        private string $class = 'columns',
-        private $filter = null
+        private readonly string $selector = 'p:not([class])',
+        private readonly string $class = 'columns',
+        ?callable $filter = null
     ) {
+        $this->filter = $filter;
     }
 
-    public function run($doc): void
+    public function run(ParentNode $parent): void
     {
         $wrapper = null;
-        $node = $doc->body->firstChild;
+        $node = $parent->firstChild;
         while ($node) {
             if (!$node instanceof Element) {
                 $next = $node->nextSibling;
