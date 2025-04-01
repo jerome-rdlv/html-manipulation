@@ -4,8 +4,9 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Dom\ParentNode;
+use Dom\Element;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
+use Rdlv\WordPress\HtmlManipulation\Util;
 
 class ChangeHeadingLevel implements TransformInterface
 {
@@ -20,13 +21,13 @@ class ChangeHeadingLevel implements TransformInterface
         $this->selector = $selector;
     }
 
-    public function run(ParentNode $node): void
+    public function run(Element $root): void
     {
         if (!$this->increment) {
             return;
         }
-       
-        foreach ($node->querySelectorAll($this->selector) as $element) {
+
+        foreach ($root->querySelectorAll($this->selector) as $element) {
             if (preg_match('/H([0-9])/', $element->tagName, $m)) {
                 $level = ((int)$m[1] + $this->increment);
                 if ($level < 1 || $level > 6) {

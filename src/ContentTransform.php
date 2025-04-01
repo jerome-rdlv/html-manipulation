@@ -2,12 +2,8 @@
 
 namespace Rdlv\WordPress\HtmlManipulation;
 
-use Dom\HTMLDocument;
-
 class ContentTransform
 {
-    public const TEMPLATE_HTML5 = '<!DOCTYPE html><html><meta charset="UTF-8"/><body>%s</body></html>';
-
     /**
      * @var TransformInterface[]
      */
@@ -37,8 +33,7 @@ class ContentTransform
             return $source;
         }
 
-        // template is needed to have valid HTML and prevent a parser warning
-        $document = HTMLDocument::createFromString(sprintf(self::TEMPLATE_HTML5, $source));
+        $document = Util::createDocumentFromHtmlFragment($source);
 
         foreach ($transforms as $transform) {
             if (is_callable($transform)) {
@@ -48,8 +43,7 @@ class ContentTransform
             }
         }
 
-        return $document->body->innerHTML;
-
+        return Util::dumpHtmlFragment($document);
     }
 }
 

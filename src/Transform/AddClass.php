@@ -4,7 +4,7 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Dom\ParentNode;
+use Dom\Element;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class AddClass implements TransformInterface
@@ -18,9 +18,9 @@ class AddClass implements TransformInterface
         $this->class = array_filter(is_array($class) ? $class : explode(' ', $class));
     }
 
-    public function run(ParentNode $node): void
+    public function run(Element $root): void
     {
-        foreach ($node->querySelectorAll($this->query) as $element) {
+        foreach ($root->querySelectorAll($this->query) as $element) {
             foreach ($this->class as $class) {
                 $element->classList->add($class);
             }

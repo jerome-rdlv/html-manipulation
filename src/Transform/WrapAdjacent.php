@@ -3,7 +3,6 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 use Dom\Element;
-use Dom\ParentNode;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class WrapAdjacent implements TransformInterface
@@ -18,10 +17,10 @@ class WrapAdjacent implements TransformInterface
         $this->filter = $filter;
     }
 
-    public function run(ParentNode $parent): void
+    public function run(Element $root): void
     {
         $wrapper = null;
-        $node = $parent->firstChild;
+        $node = $root->firstChild;
         while ($node) {
             if (!$node instanceof Element) {
                 $next = $node->nextSibling;

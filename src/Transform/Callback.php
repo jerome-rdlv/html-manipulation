@@ -2,7 +2,7 @@
 
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
-use Dom\ParentNode;
+use Dom\Element;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class Callback implements TransformInterface
@@ -16,9 +16,9 @@ class Callback implements TransformInterface
         $this->callback = $callback;
     }
 
-    public function run(ParentNode $node): void
+    public function run(Element $root): void
     {
-        foreach ($node->querySelectorAll($this->selector) as $element) {
+        foreach ($root->querySelectorAll($this->selector) as $element) {
             call_user_func($this->callback, $element);
         }
     }

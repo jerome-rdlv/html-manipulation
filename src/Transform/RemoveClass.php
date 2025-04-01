@@ -4,7 +4,7 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Dom\ParentNode;
+use Dom\Element;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class RemoveClass implements TransformInterface
@@ -18,9 +18,9 @@ class RemoveClass implements TransformInterface
         $this->class = $class;
     }
 
-    public function run(ParentNode $doc): void
+    public function run(Element $root): void
     {
-        foreach ($doc->querySelectorAll($this->query) as $element) {
+        foreach ($root->querySelectorAll($this->query) as $element) {
             $element->classList->remove($this->class);
         }
     }

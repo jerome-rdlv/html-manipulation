@@ -4,9 +4,9 @@
 namespace Rdlv\WordPress\HtmlManipulation;
 
 
-use Dom\ParentNode;
+use Dom\Element;
 
 interface TransformInterface
 {
-    public function run(ParentNode $node);
+    public function run(Element $root);
 }

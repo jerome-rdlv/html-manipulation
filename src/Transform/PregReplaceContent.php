@@ -4,7 +4,7 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Dom\ParentNode;
+use Dom\Element;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class PregReplaceContent implements TransformInterface
@@ -20,9 +20,9 @@ class PregReplaceContent implements TransformInterface
         $this->replace = $replace;
     }
 
-    public function run(ParentNode $node): void
+    public function run(Element $root): void
     {
-        foreach ($node->querySelectorAll($this->query) as $element) {
+        foreach ($root->querySelectorAll($this->query) as $element) {
             $element->innerHTML = preg_replace(
                 $this->search,
                 $this->replace,

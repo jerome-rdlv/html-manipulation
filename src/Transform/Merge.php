@@ -5,7 +5,6 @@ namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
 use Dom\Element;
-use Dom\ParentNode;
 use Dom\Text;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
@@ -22,9 +21,9 @@ class Merge implements TransformInterface
         $this->class = $class;
     }
 
-    public function run(ParentNode $node): void
+    public function run(Element $root): void
     {
-        $elements = $node->querySelectorAll($this->query);
+        $elements = $root->querySelectorAll($this->query);
 
         if ($elements->count()) {
             $candidates = [];
@@ -32,13 +31,13 @@ class Merge implements TransformInterface
                 $candidates[] = $candidate;
             }
 
-            $node = $candidates[0]->ownerDocument;
+            $root = $candidates[0]->ownerDocument;
 
             while (count($candidates) > 0) {
                 $candidate = $candidates[0];
 
                 // create new parent element
-                $new = $node->createElement($this->tag ?: $candidate->tagName);
+                $new = $root->createElement($this->tag ?: $candidate->tagName);
                 foreach ($candidate->attributes as $attribute) {
                     $new->setAttribute($attribute->name, $attribute->value);
                 }
@@ -79,7 +78,7 @@ class Merge implements TransformInterface
                         ||
                         in_array($candidate, $candidates, true)
                         ||
-                        ($candidate instanceof Element && $candidate->tagName === 'br')
+                        ($candidate instanceof Element && $candidate->tagName === 'BR')
                     )
                 );
             }

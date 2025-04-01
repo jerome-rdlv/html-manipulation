@@ -4,7 +4,7 @@
 namespace Rdlv\WordPress\HtmlManipulation\Transform;
 
 
-use Dom\ParentNode;
+use Dom\Element;
 use Rdlv\WordPress\HtmlManipulation\TransformInterface;
 
 class SetAttributes implements TransformInterface
@@ -18,9 +18,9 @@ class SetAttributes implements TransformInterface
         $this->attributes = $attributes;
     }
 
-    public function run(ParentNode $node): void
+    public function run(Element $root): void
     {
-        foreach ($node->querySelectorAll($this->query) as $element) {
+        foreach ($root->querySelectorAll($this->query) as $element) {
             foreach ($this->attributes as $attribute => $value) {
                 if ($value === null) {
                     $element->removeAttribute($attribute);
