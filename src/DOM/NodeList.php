@@ -11,7 +11,7 @@ class NodeList implements Iterator, Countable
 {
     /** @var DOMNodeList */
     private $nodes;
-    
+
     private $index = 0;
 
     /**
@@ -22,12 +22,11 @@ class NodeList implements Iterator, Countable
     {
         if ($nodes instanceof DOMNodeList) {
             $this->nodes = $nodes;
-        }
-        else {
+        } else {
             $this->nodes = new DOMNodeList();
         }
     }
-    
+
     public function innerHtml()
     {
         $output = '';
@@ -37,12 +36,12 @@ class NodeList implements Iterator, Countable
         }
         return $output;
     }
-    
-    public function count()
+
+    public function count(): int
     {
         return $this->nodes->length;
     }
-    
+
     public function item($index)
     {
         return $this->nodes->item($index);
@@ -65,7 +64,7 @@ class NodeList implements Iterator, Countable
      * @return void Any returned value is ignored.
      * @since 5.0.0
      */
-    public function next()
+    public function next(): void
     {
         ++$this->index;
     }
@@ -88,7 +87,7 @@ class NodeList implements Iterator, Countable
      * Returns true on success or false on failure.
      * @since 5.0.0
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->nodes->item($this->index) !== null;
     }
@@ -99,7 +98,7 @@ class NodeList implements Iterator, Countable
      * @return void Any returned value is ignored.
      * @since 5.0.0
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->index = 0;
     }
