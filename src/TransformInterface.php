@@ -8,5 +8,5 @@ use Dom\Element;
 
 interface TransformInterface
 {
-    public function run(Element $root);
+    public function run(Element $root): void;
 }
