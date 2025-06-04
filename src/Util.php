@@ -16,7 +16,7 @@ class Util
      */
     public static function createDocumentFromHtmlFragment(string $fragment): HTMLDocument
     {
-        return HTMLDocument::createFromString(sprintf(self::TEMPLATE_HTML5, $fragment));
+        return HTMLDocument::createFromString(sprintf(self::TEMPLATE_HTML5, $fragment), LIBXML_NOERROR);
     }
 
     public static function dumpHtmlFragment(HTMLDocument $document): string
