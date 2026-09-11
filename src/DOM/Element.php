@@ -9,9 +9,9 @@ use DOMElement;
  * @property ClassList $classList
  * @property string $id
  * @property string $name
- * @property static $nextElementSibling
- * @property static $previousElementSibling
- * @property static $firstElementChild
+ * @property ?static $nextElementSibling
+ * @property ?static $previousElementSibling
+ * @property ?static $firstElementChild
  */
 class Element extends DOMElement implements NodeInterface
 {
