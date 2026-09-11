@@ -8,6 +8,10 @@ use DOMXPath;
 use Masterminds\HTML5;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 
+/**
+ * @property-read Element $body
+ * @property-read Element $head
+ */
 class Document extends DOMDocument implements NodeInterface
 {
     public const PARSER_NATIVE = 'native';
